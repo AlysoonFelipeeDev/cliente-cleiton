@@ -7,30 +7,295 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        body { font-family: Arial, Helvetica, sans-serif; background: #f3f4f6; margin: 0; padding: 24px; }
-        .app { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
-        .panel { background: white; padding: 16px; border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,.06); width: 420px; flex-shrink:0; }
-        label { display:block; font-size:13px; color:#333; margin-top:10px; }
-        input[type=text], textarea, select { width:100%; padding:8px; border:1px solid #ccc; border-radius:6px; margin-top:6px; font-size:14px; }
-        textarea { min-height:120px; resize:vertical; }
-        .row { display:flex; gap:8px; }
-        .btn { display:inline-block; padding:10px 14px; border-radius:8px; background:#0b6; color:#fff; border:none; cursor:pointer; margin-top:12px; }
-        .btn.ghost { background:#fff; color:#111; border:1px solid #ccc; }
-        .preview { flex:1; min-width:360px; }
-        .paper { width:210mm; min-height:297mm; background:#fff; padding:20mm; border:1px solid #ddd; border-radius:4px; position:relative; }
-        .header { display:flex; align-items:center; border-bottom:2px solid #000; padding-bottom:12px; margin-bottom:20px; }
-        .header img { height:150px; }
-        .header .company { font-weight:bold; font-size:20px; margin-left:10px; }
-        .title-row { display:flex; justify-content:space-between; align-items:center; }
-        .title { font-size:18px; font-weight:bold; text-transform:uppercase; }
-        .section { margin-top:12px; font-size:14px; }
-        .risco { border:solid 1px; margin:10px 0; }
-        .footer-container { position:absolute; bottom:20mm; left:20mm; right:20mm; text-align:center; }
-        .risco-top { margin:0; margin-bottom:60px; }
-        .risco-bottom { margin:10px 0 0 0; }
-        .signature-section { display:inline-block; text-align:center; width:220px; }
-        .signature-section .line { display:block; border-top:1px solid #000; padding-top:6px; }
-        .date-container { text-align:right; margin-top:10px; }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f3f4f6;
+            margin: 0;
+            padding: 24px;
+        }
+
+        .app {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .panel {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, .06);
+            width: 420px;
+            flex-shrink: 0;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            color: #333;
+            margin-top: 10px;
+        }
+
+        input[type=text],
+        textarea,
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            margin-top: 6px;
+            font-size: 14px;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 14px;
+            border-radius: 8px;
+            background: #0b6;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+
+        .btn.ghost {
+            background: #fff;
+            color: #111;
+            border: 1px solid #ccc;
+        }
+
+        #servicos-container {
+            margin-top: 20px;
+        }
+
+        .servico-item {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            align-items: flex-end;
+        }
+
+        .servico-item input,
+        .servico-item .valor-total-item {
+            flex: 1;
+        }
+
+        .servico-item .descricao-item {
+            flex: 2;
+        }
+
+        .servico-item .qtd-item {
+            width: 50px;
+        }
+
+        #totalGeral {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 12px;
+            text-align: right;
+        }
+
+        .preview {
+            flex: 1;
+            min-width: 360px;
+        }
+
+        .paper {
+            width: 210mm;
+            min-height: 297mm;
+            background: #fff;
+            padding: 20mm;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .header img {
+            height: 150px;
+        }
+
+        .header .company {
+            font-weight: bold;
+            font-size: 20px
+        }
+
+        .company {
+            margin-left: 10px;
+        }
+
+        .title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .section {
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        .risco {
+            border: solid 1px;
+            margin: 10px 0;
+        }
+
+        .servicos-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .servicos-table th,
+        .servicos-table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .servicos-table th {
+            background-color: #f3f4f6;
+            font-weight: bold;
+        }
+        
+        /* Container para rolar a tabela em mobile */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .footer-container {
+            position: absolute;
+            bottom: 20mm;
+            left: 20mm;
+            right: 20mm;
+            text-align: center;
+        }
+
+        .risco-top {
+            margin: 0;
+            margin-bottom: 60px;
+        }
+
+        .risco-bottom {
+            margin: 10px 0 0 0;
+        }
+
+        .signature-section {
+            display: inline-block;
+            text-align: center;
+            width: 220px;
+        }
+
+        .signature-section .line {
+            display: block;
+            border-top: 1px solid #000;
+            padding-top: 6px;
+        }
+
+        .date-container {
+            text-align: right;
+            margin-top: 10px;
+        }
+        
+        /* Estilo para a caixa de mensagem */
+        .message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #f44336;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: none;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+
+            .app {
+                flex-direction: column;
+            }
+
+            .panel {
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .preview {
+                min-width: unset;
+            }
+
+            .paper {
+                width: 95vw;
+                padding: 10mm;
+                min-height: auto;
+            }
+
+            .header img {
+                height: 100px;
+            }
+
+            .footer-container {
+                position: relative;
+                bottom: unset;
+                left: unset;
+                right: unset;
+            }
+
+            .signature-section {
+                width: 100%;
+            }
+
+            .date-container {
+                text-align: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .servico-item {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .servico-item input {
+                width: 100%;
+            }
+
+            .servico-item .remove-btn {
+                align-self: flex-start;
+            }
+        }
     </style>
 </head>
 <body>
@@ -42,25 +307,45 @@
                 <input id="date" type="text">
                 <button id="useNow" class="btn ghost">Usar hoje</button>
             </div>
+
             <label>Tipo</label>
             <select id="tipo">
                 <option value="LAUDO">Laudo Técnico</option>
                 <option value="ORCAMENTO">Orçamento</option>
+                <option value="SERVICO_PRESTADO">Serviço Prestado</option>
             </select>
+
             <label>Nome do Cliente</label>
             <input id="cliente" type="text">
+
             <label>Contato</label>
             <input id="contato" type="text">
+
             <label>Endereço - Rua</label>
             <input id="rua" type="text">
             <div class="row">
-                <div style="flex:1"><label>Nº</label><input id="numero" type="text"></div>
-                <div style="flex:1"><label>Bairro</label><input id="bairro" type="text"></div>
+                <div style="flex:1">
+                    <label>Nº</label>
+                    <input id="numero" type="text">
+                </div>
+                <div style="flex:1">
+                    <label>Bairro</label>
+                    <input id="bairro" type="text">
+                </div>
             </div>
             <label>Cidade</label>
             <input id="cidade" type="text">
-            <label>Descrição</label>
+
+            <label id="descricao-label">Descrição</label>
             <textarea id="descricao"></textarea>
+
+            <div id="servicos-container" style="display: none;">
+                <label>Serviços</label>
+                <div id="servicos-list"></div>
+                <button id="add-servico" class="btn ghost">Adicionar Serviço</button>
+                <div id="valor-total-display"></div>
+            </div>
+
             <button id="gerar" class="btn">Salvar em PDF</button>
             <button id="limpar" class="btn ghost">Limpar</button>
         </div>
@@ -68,23 +353,55 @@
         <div class="preview">
             <div class="paper" id="paper">
                 <div class="header">
-                    <img src="/foto-jdc.jpg" alt="Logo" id="logoImg">
+                    <img src="/foto-jdc.jpg" alt="Logo">
                     <div class="company">
                         JDC Climatização<br>
                         <span style="font-size:12px">Cleiton Munzfeld me <br> Rua Israel de Almeida 884<br>Contato: 47 99663-5527</span>
                     </div>
                 </div>
-                <div class="section"><strong>Cliente:</strong> <span id="clientePreview">-</span></div>
-                <div class="section"><strong>Contato:</strong> <span id="contatoPreview">-</span></div>
-                <div class="section"><strong>Endereço:</strong> <span id="endPreview">-</span></div>
-                <div class="risco"></div>
-                <div class="title-row">
-                    <div class="title" id="tipoPreview">LAUDO TÉCNICO</div>
-                    <div class="section"><strong>Data:</strong> <span id="metaData">--/--/----</span></div>
+
+                <div class="section">
+                    <strong>Cliente:</strong> <span id="clientePreview">-</span>
+                </div>
+                <div class="section">
+                    <strong>Contato:</strong> <span id="contatoPreview">-</span>
+                </div>
+                <div class="section">
+                    <strong>Endereço:</strong> <span id="endPreview">-</span>
                 </div>
                 <div class="risco"></div>
-                <div class="section"><strong>Descrição:</strong><div id="descPreview" style="min-height:150px; margin-top:10px;">-</div></div>
+
+                <div class="title-row">
+                    <div class="title" id="tipoPreview">LAUDO TÉCNICO</div>
+                    <div class="section">
+                        <strong>Data:</strong> <span id="metaData">--/--/----</span>
+                    </div>
+                </div>
+
+                <div class="risco"></div>
+                <div class="section" id="descricao-preview-section">
+                    <strong>Descrição:</strong>
+                    <div id="descPreview" style="min-height: 150px; margin-top: 10px;">-</div>
+                </div>
+
+                <div id="servicos-preview-section" style="display: none;">
+                    <div class="table-container">
+                        <table class="servicos-table">
+                            <thead>
+                                <tr>
+                                    <th>Descrição</th>
+                                    <th>Qtd.</th>
+                                    <th>Valor Unit.</th>
+                                    <th>Valor Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="servicos-preview-list"></tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <div class="footer-container">
+                    <div id="totalGeralFooter" style="text-align: right; font-weight: bold; font-size: 16px; margin-bottom: 5px;"></div>
                     <div class="risco risco-top"></div>
                     <div class="signature-section">
                         <div class="line"></div>
@@ -96,94 +413,187 @@
             </div>
         </div>
     </div>
+    
+    <div id="message-box" class="message-box"></div>
 
-<script>
-const $ = id => document.getElementById(id)
+    <script>
+        const $ = id => document.getElementById(id);
+        const servicosList = $('servicos-list');
+        const servicosPreviewList = $('servicos-preview-list');
+        const totalGeralFooter = $('totalGeralFooter');
+        let servicoCounter = 0;
 
-function formatDateBR(d = new Date()) {
-    const day = String(d.getDate()).padStart(2,'0')
-    const month = String(d.getMonth()+1).padStart(2,'0')
-    const year = d.getFullYear()
-    return `${day}/${month}/${year}`
-}
+        function addServicoItem(descricao = '', quantidade = '', valor = '') {
+            servicoCounter++;
+            const itemHtml = `
+                <div class="servico-item" id="servico-item-${servicoCounter}">
+                    <input type="text" class="descricao-item" placeholder="Descrição do Serviço" value="${descricao}">
+                    <input type="text" class="qtd-item" placeholder="Qtd" value="${quantidade}">
+                    <input type="text" class="valor-unitario-item" placeholder="Valor Unit." value="${valor}">
+                    <button class="remove-btn btn ghost">x</button>
+                </div>
+            `;
+            servicosList.insertAdjacentHTML('beforeend', itemHtml);
 
-function formatFullDateBR(d = new Date()) {
-    const options = { weekday:'long', day:'numeric', month:'long', year:'numeric' }
-    const formatted = d.toLocaleDateString('pt-BR', options)
-    return formatted.charAt(0).toUpperCase() + formatted.slice(1)
-}
+            const newItem = $(`servico-item-${servicoCounter}`);
+            newItem.querySelector('.remove-btn').addEventListener('click', () => {
+                newItem.remove();
+                updatePreview();
+            });
+            newItem.querySelectorAll('input').forEach(input => input.addEventListener('input', updatePreview));
+            updatePreview();
+        }
 
-$('date').value = formatDateBR()
-$('useNow').addEventListener('click', ()=>{
-    $('date').value = formatDateBR()
-    updatePreview()
-})
+        $('add-servico').addEventListener('click', () => addServicoItem());
 
-const fields = ['tipo','cliente','contato','rua','numero','bairro','cidade','descricao']
-fields.forEach(f => $(f).addEventListener('input', updatePreview))
+        function updateServicosPreview() {
+            servicosPreviewList.innerHTML = '';
+            let totalGeral = 0;
+            document.querySelectorAll('.servico-item').forEach(item => {
+                const descricao = item.querySelector('.descricao-item').value;
+                const qtd = item.querySelector('.qtd-item').value;
+                const valorUnitario = item.querySelector('.valor-unitario-item').value;
 
-function updatePreview() {
-    $('clientePreview').innerText = $('cliente').value || '-'
-    $('contatoPreview').innerText = $('contato').value || '-'
-    const rua = $('rua').value || '-'
-    const num = $('numero').value || ''
-    const bairro = $('bairro').value || '-'
-    const cidade = $('cidade').value || '-'
-    $('endPreview').innerText = rua + (num?(', nº '+num):'') + ' — ' + cidade + ' - ' + bairro
-    $('descPreview').innerText = $('descricao').value || '-'
-    $('tipoPreview').innerText = $('tipo').value==='LAUDO'?'LAUDO TÉCNICO':'ORÇAMENTO'
-    $('metaData').innerText = $('date').value || formatDateBR()
-    $('fullDate').innerText = formatFullDateBR()
-}
+                // Remove R$ and replace comma with dot for calculation
+                const valorLimpo = valorUnitario.replace(/[R$.,]/g, '').replace(/,/, '.');
+                const qtdLimpa = qtd.replace(/[^0-9.]/g, '') || 1;
+                const valorTotalItem = (parseFloat(valorLimpo) || 0) * (parseFloat(qtdLimpa) || 1);
 
-updatePreview()
+                totalGeral += valorTotalItem;
 
-$('limpar').addEventListener('click', ()=>{
-    fields.forEach(f=>$(f).value='')
-    $('date').value = formatDateBR()
-    updatePreview()
-})
+                if (descricao || qtd || valorUnitario) {
+                    const rowHtml = `
+                        <tr>
+                            <td>${descricao}</td>
+                            <td>${qtd}</td>
+                            <td>R$ ${valorUnitario}</td>
+                            <td>R$ ${valorTotalItem.toFixed(2).replace('.', ',')}</td>
+                        </tr>
+                    `;
+                    servicosPreviewList.insertAdjacentHTML('beforeend', rowHtml);
+                }
+            });
+            totalGeralFooter.innerText = `Total: R$ ${totalGeral.toFixed(2).replace('.', ',')}`;
+        }
 
-$('gerar').addEventListener('click', ()=>{
-    const paper = $('paper')
-    const logo = $('logoImg')
+        function formatDateBR(d = new Date()) {
+            const day = String(d.getDate()).padStart(2, '0');
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const year = d.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
 
-    // Espera a imagem carregar
-    const gerarPDF = ()=>{
-        html2canvas(paper, { scale: 2 }).then(canvas=>{
-            const { jsPDF } = window.jspdf
-            const pdf = new jsPDF('p','mm','a4')
-            const imgData = canvas.toDataURL('image/png')
-            const imgWidth = 210
-            const pageHeight = 297
-            const imgHeight = canvas.height * imgWidth / canvas.width
-            let heightLeft = imgHeight
-            let position = 0
+        function formatFullDateBR(d = new Date()) {
+            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            const formattedDate = d.toLocaleDateString('pt-BR', options);
+            return formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+        }
 
-            pdf.addImage(imgData,'PNG',0,position,imgWidth,imgHeight)
-            heightLeft -= pageHeight
+        // Custom alert function
+        function showMessageBox(message) {
+            const msgBox = $('message-box');
+            msgBox.innerText = message;
+            msgBox.style.display = 'block';
+            setTimeout(() => {
+                msgBox.style.display = 'none';
+            }, 3000); // Hide after 3 seconds
+        }
 
-            while(heightLeft>=0){
-                position = heightLeft - imgHeight
-                pdf.addPage()
-                pdf.addImage(imgData,'PNG',0,position,imgWidth,imgHeight)
-                heightLeft -= pageHeight
+        $('date').value = formatDateBR();
+        $('useNow').addEventListener('click', () => {
+            $('date').value = formatDateBR();
+            updatePreview();
+        });
+
+        const fields = ['tipo', 'cliente', 'contato', 'rua', 'numero', 'bairro', 'cidade'];
+        fields.forEach(f => $(f).addEventListener('input', updatePreview));
+        $('descricao').addEventListener('input', updatePreview);
+        $('tipo').addEventListener('change', updatePreview);
+
+        function updatePreview() {
+            $('clientePreview').innerText = $('cliente').value || '-';
+            $('contatoPreview').innerText = $('contato').value || '-';
+            const rua = $('rua').value || '-';
+            const num = $('numero').value || '';
+            const bairro = $('bairro').value || '-';
+            const cidade = $('cidade').value || '-';
+            $('endPreview').innerText = rua + (num ? (', nº ' + num) : '') + ' — ' + cidade + ' - ' + bairro;
+            $('metaData').innerText = $('date').value || formatDateBR();
+            $('fullDate').innerText = formatFullDateBR();
+
+            const tipo = $('tipo').value;
+            $('tipoPreview').innerText = (tipo === 'LAUDO') ? 'LAUDO TÉCNICO' : (tipo === 'ORCAMENTO' ? 'ORÇAMENTO' : 'SERVIÇO PRESTADO');
+
+            if (tipo === 'LAUDO') {
+                $('descricao-label').style.display = 'block';
+                $('descricao').style.display = 'block';
+                $('descricao-preview-section').style.display = 'block';
+                $('servicos-container').style.display = 'none';
+                $('servicos-preview-section').style.display = 'none';
+                totalGeralFooter.style.display = 'none';
+                $('descPreview').innerText = $('descricao').value || '-';
+            } else {
+                $('descricao-label').style.display = 'none';
+                $('descricao').style.display = 'none';
+                $('descricao-preview-section').style.display = 'none';
+                $('servicos-container').style.display = 'block';
+                $('servicos-preview-section').style.display = 'block';
+                totalGeralFooter.style.display = 'block';
+                updateServicosPreview();
             }
+        }
 
-            const tipoDoc = $('tipo').value==='LAUDO'?'laudo':'orcamento'
-            const clienteNome = ($('cliente').value?$('cliente').value.replace(/\s+/g,'_'):'documento')
-            const fileName = `${tipoDoc}_${clienteNome}.pdf`
+        updatePreview();
+        addServicoItem();
 
-            pdf.save(fileName)
-        })
-    }
+        $('limpar').addEventListener('click', () => {
+            fields.forEach(f => $(f).value = '');
+            $('descricao').value = '';
+            $('date').value = formatDateBR();
+            servicosList.innerHTML = '';
+            addServicoItem();
+            updatePreview();
+        });
 
-    if(logo.complete){
-        gerarPDF()
-    } else {
-        logo.onload = gerarPDF
-    }
-})
-</script>
+        $('gerar').addEventListener('click', () => {
+            const paperElement = $('paper');
+            const originalButtonText = $('gerar').innerText;
+            $('gerar').innerText = 'Gerando PDF...';
+            $('gerar').disabled = true;
+
+            html2canvas(paperElement, { scale: 2 }).then(canvas => {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgData = canvas.toDataURL('image/png');
+                const imgWidth = 210;
+                const pageHeight = 297;
+                const imgHeight = canvas.height * imgWidth / canvas.width;
+                let heightLeft = imgHeight;
+                let position = 0;
+
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+
+                const tipoDoc = $('tipo').value;
+                const clienteNome = ($('cliente').value ? $('cliente').value.replace(/\s+/g, '_') : 'documento');
+                const fileName = `${tipoDoc}_${clienteNome}.pdf`;
+
+                pdf.save(fileName);
+            }).catch(error => {
+                console.error("Erro ao gerar PDF:", error);
+                showMessageBox("Ocorreu um erro ao gerar o PDF. Verifique o console para mais detalhes.");
+            }).finally(() => {
+                $('gerar').innerText = originalButtonText;
+                $('gerar').disabled = false;
+            });
+        });
+    </script>
 </body>
 </html>
