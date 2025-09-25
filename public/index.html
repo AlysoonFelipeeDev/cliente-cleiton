@@ -200,17 +200,18 @@
         
         .risco-top {
             margin: 0;
-            margin-bottom: 60px;
+            margin-bottom: 40px;
         }
-
+        
         .risco-bottom {
-            margin: 10px 0 0 0;
+            margin-top: 5px;
         }
 
         .signature-section {
             display: inline-block;
             text-align: center;
             width: 220px;
+            padding-top: 10px;
         }
 
         .signature-section .line {
@@ -238,6 +239,16 @@
             z-index: 1000;
             display: none;
             text-align: center;
+        }
+
+        /* Novo estilo para o total no rodapé */
+        #totalGeralFooterContainer {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 12px;
+            margin-bottom: 5px;
         }
 
         @media (max-width: 768px) {
@@ -321,7 +332,6 @@
                 <label>Serviços</label>
                 <div id="servicos-list"></div>
                 <button id="add-servico" class="btn ghost">Adicionar Serviço</button>
-                <div id="valor-total-display"></div>
             </div>
 
             <button id="gerar" class="btn">Salvar em PDF</button>
@@ -378,16 +388,19 @@
                             </table>
                         </div>
                     </div>
-                    <div id="totalGeralFooter" style="text-align: right; font-weight: bold; font-size: 16px; margin-top: 12px; margin-bottom: 5px;"></div>
                 </div>
 
                 <div class="footer-container">
+                    <div id="totalGeralFooterContainer">
+                      <span>Total:</span>
+                      <span id="totalGeralFooter"></span>
+                    </div>
                     <div class="risco risco-top"></div>
                     <div class="signature-section">
                         <div class="line"></div>
                         <div>Assinatura</div>
                     </div>
-                    <div class="risco risco-bottom"></div>
+                    <div class="risco"></div>
                     <div class="date-container" id="fullDate"></div>
                 </div>
             </div>
@@ -401,6 +414,7 @@
         const servicosList = $('servicos-list');
         const servicosPreviewList = $('servicos-preview-list');
         const totalGeralFooter = $('totalGeralFooter');
+        const totalGeralFooterContainer = $('totalGeralFooterContainer');
         let servicoCounter = 0;
 
         function addServicoItem(descricao = '', quantidade = '', valor = '') {
@@ -453,7 +467,7 @@
                     servicosPreviewList.insertAdjacentHTML('beforeend', rowHtml);
                 }
             });
-            totalGeralFooter.innerText = `Total: R$ ${totalGeral.toFixed(2).replace('.', ',')}`;
+            totalGeralFooter.innerText = `R$ ${totalGeral.toFixed(2).replace('.', ',')}`;
         }
 
         function formatDateBR(d = new Date()) {
@@ -510,7 +524,7 @@
                 $('descricao-preview-section').style.display = 'block';
                 $('servicos-container').style.display = 'none';
                 $('servicos-preview-section').style.display = 'none';
-                totalGeralFooter.style.display = 'none';
+                totalGeralFooterContainer.style.display = 'none';
                 $('descPreview').innerText = $('descricao').value || '-';
             } else {
                 $('descricao-label').style.display = 'none';
@@ -518,7 +532,7 @@
                 $('descricao-preview-section').style.display = 'none';
                 $('servicos-container').style.display = 'block';
                 $('servicos-preview-section').style.display = 'block';
-                totalGeralFooter.style.display = 'block';
+                totalGeralFooterContainer.style.display = 'flex';
                 updateServicosPreview();
             }
         }
