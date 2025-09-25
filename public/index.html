@@ -118,7 +118,13 @@
             padding: 20mm;
             border: 1px solid #ddd;
             border-radius: 4px;
-            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .main-content {
+            flex-grow: 1;
         }
 
         .header {
@@ -189,25 +195,16 @@
         }
 
         .footer-container {
-            position: absolute;
-            bottom: 20mm;
-            left: 20mm;
-            right: 20mm;
             text-align: center;
         }
         
-        #descricao-preview-section,
-        #servicos-preview-section {
-            margin-bottom: 40mm; /* Aumenta o espaço para a assinatura */
-        }
-
         .risco-top {
             margin: 0;
-            margin-bottom: 20px;
+            margin-bottom: 60px;
         }
 
         .risco-bottom {
-            margin: 5px 0 0 0;
+            margin: 10px 0 0 0;
         }
 
         .signature-section {
@@ -259,31 +256,7 @@
 
             .preview {
                 min-width: unset;
-            }
-
-            .paper {
-                width: 95vw;
-                padding: 10mm;
-                min-height: auto;
-            }
-
-            .header img {
-                height: 100px;
-            }
-
-            .footer-container {
-                position: relative;
-                bottom: unset;
-                left: unset;
-                right: unset;
-            }
-
-            .signature-section {
-                width: 100%;
-            }
-
-            .date-container {
-                text-align: center;
+                overflow-x: auto; /* Permite a rolagem horizontal na pré-visualização */
             }
         }
         
@@ -357,56 +330,58 @@
 
         <div class="preview">
             <div class="paper" id="paper">
-                <div class="header">
-                    <img src="/foto-jdc.jpg" alt="Logo">
-                    <div class="company">
-                        JDC Climatização<br>
-                        <span style="font-size:12px">Cleiton Munzfeld me <br> Rua Israel de Almeida 884<br>Contato: 47 99663-5527</span>
+                <div class="main-content">
+                    <div class="header">
+                        <img src="/foto-jdc.jpg" alt="Logo">
+                        <div class="company">
+                            JDC Climatização<br>
+                            <span style="font-size:12px">Cleiton Munzfeld me <br> Rua Israel de Almeida 884<br>Contato: 47 99663-5527</span>
+                        </div>
                     </div>
-                </div>
 
-                <div class="section">
-                    <strong>Cliente:</strong> <span id="clientePreview">-</span>
-                </div>
-                <div class="section">
-                    <strong>Contato:</strong> <span id="contatoPreview">-</span>
-                </div>
-                <div class="section">
-                    <strong>Endereço:</strong> <span id="endPreview">-</span>
-                </div>
-                <div class="risco"></div>
-
-                <div class="title-row">
-                    <div class="title" id="tipoPreview">LAUDO TÉCNICO</div>
                     <div class="section">
-                        <strong>Data:</strong> <span id="metaData">--/--/----</span>
+                        <strong>Cliente:</strong> <span id="clientePreview">-</span>
                     </div>
-                </div>
-
-                <div class="risco"></div>
-                <div class="section" id="descricao-preview-section">
-                    <strong>Descrição:</strong>
-                    <div id="descPreview" style="min-height: 150px; margin-top: 10px;">-</div>
-                </div>
-
-                <div id="servicos-preview-section" style="display: none;">
-                    <div class="table-container">
-                        <table class="servicos-table">
-                            <thead>
-                                <tr>
-                                    <th>Descrição</th>
-                                    <th>Qtd.</th>
-                                    <th>Valor Unit.</th>
-                                    <th>Valor Total</th>
-                                </tr>
-                            </thead>
-                            <tbody id="servicos-preview-list"></tbody>
-                        </table>
+                    <div class="section">
+                        <strong>Contato:</strong> <span id="contatoPreview">-</span>
                     </div>
+                    <div class="section">
+                        <strong>Endereço:</strong> <span id="endPreview">-</span>
+                    </div>
+                    <div class="risco"></div>
+
+                    <div class="title-row">
+                        <div class="title" id="tipoPreview">LAUDO TÉCNICO</div>
+                        <div class="section">
+                            <strong>Data:</strong> <span id="metaData">--/--/----</span>
+                        </div>
+                    </div>
+
+                    <div class="risco"></div>
+                    <div class="section" id="descricao-preview-section">
+                        <strong>Descrição:</strong>
+                        <div id="descPreview" style="min-height: 150px; margin-top: 10px;">-</div>
+                    </div>
+
+                    <div id="servicos-preview-section" style="display: none;">
+                        <div class="table-container">
+                            <table class="servicos-table">
+                                <thead>
+                                    <tr>
+                                        <th>Descrição</th>
+                                        <th>Qtd.</th>
+                                        <th>Valor Unit.</th>
+                                        <th>Valor Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="servicos-preview-list"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="totalGeralFooter" style="text-align: right; font-weight: bold; font-size: 16px; margin-top: 12px; margin-bottom: 5px;"></div>
                 </div>
 
                 <div class="footer-container">
-                    <div id="totalGeralFooter" style="text-align: right; font-weight: bold; font-size: 16px; margin-bottom: 5px;"></div>
                     <div class="risco risco-top"></div>
                     <div class="signature-section">
                         <div class="line"></div>
