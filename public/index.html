@@ -328,12 +328,20 @@
                     <input id="numero" type="text">
                 </div>
                 <div style="flex:1">
+                    <label>Complemento</label>
+                    <input id="complemento" type="text">
+                </div>
+            </div>
+            <div class="row">
+                <div style="flex:1">
                     <label>Bairro</label>
                     <input id="bairro" type="text">
                 </div>
+                <div style="flex:1">
+                    <label>Cidade</label>
+                    <input id="cidade" type="text">
+                </div>
             </div>
-            <label>Cidade</label>
-            <input id="cidade" type="text">
 
             <label id="descricao-label">Descrição</label>
             <textarea id="descricao"></textarea>
@@ -509,15 +517,39 @@
             return formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
         }
 
-        // Custom alert function
         function showMessageBox(message) {
             const msgBox = $('message-box');
             msgBox.innerText = message;
             msgBox.style.display = 'block';
             setTimeout(() => {
                 msgBox.style.display = 'none';
-            }, 3000); // Hide after 3 seconds
+            }, 3000); 
         }
+
+        function formatCpfCnpj(value) {
+            // Remove tudo que não for dígito
+            const cleaned = value.replace(/\D/g, '');
+            
+            if (cleaned.length <= 11) {
+                // Formata como CPF: 000.000.000-00
+                return cleaned
+                    .replace(/(\d{3})(\d)/, '$1.$2')
+                    .replace(/(\d{3})(\d)/, '$1.$2')
+                    .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            } else {
+                // Formata como CNPJ: 00.000.000/0000-00
+                return cleaned
+                    .replace(/^(\d{2})(\d)/, '$1.$2')
+                    .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+                    .replace(/\.(\d{3})(\d)/, '.$1/$2')
+                    .replace(/(\d{4})(\d)/, '$1-$2');
+            }
+        }
+
+        $('cnpjCpf').addEventListener('input', (e) => {
+            e.target.value = formatCpfCnpj(e.target.value);
+            updatePreview();
+        });
 
         $('date').value = formatDateBR();
         $('useNow').addEventListener('click', () => {
@@ -525,7 +557,7 @@
             updatePreview();
         });
 
-        const fields = ['tipo', 'cliente', 'contato', 'rua', 'numero', 'bairro', 'cidade', 'cnpjCpf'];
+        const fields = ['tipo', 'cliente', 'contato', 'rua', 'numero', 'complemento', 'bairro', 'cidade', 'cnpjCpf'];
         fields.forEach(f => $(f).addEventListener('input', updatePreview));
         $('descricao').addEventListener('input', updatePreview);
         $('tipo').addEventListener('change', updatePreview);
@@ -534,11 +566,24 @@
         function updatePreview() {
             $('clientePreview').innerText = $('cliente').value || '-';
             $('contatoPreview').innerText = $('contato').value || '-';
-            const rua = $('rua').value || '-';
+
+            const ruaValue = $('rua').value;
+            const rua = ruaValue ? `Rua: ${ruaValue}` : '-';
             const num = $('numero').value || '';
+            const complemento = $('complemento').value || '';
             const bairro = $('bairro').value || '-';
             const cidade = $('cidade').value || '-';
-            $('endPreview').innerText = rua + (num ? (', nº ' + num) : '') + ' — ' + cidade + ' - ' + bairro;
+            
+            const endParts = [rua];
+            if (num) {
+                endParts.push(`nº ${num}`);
+            }
+            if (complemento) {
+                endParts.push(`compl. ${complemento}`);
+            }
+            endParts.push(`— ${bairro} - ${cidade}`);
+            $('endPreview').innerText = endParts.join(' ');
+
             $('metaData').innerText = $('date').value || formatDateBR();
             $('fullDate').innerText = formatFullDateBR();
             
@@ -569,15 +614,16 @@
                 updateServicosPreview();
 
                 if (shouldShowObservation) {
-                    const cnpjCpfValue = $('cnpjCpf').value.replace(/\D/g, '');
-                    const documentoTipo = cnpjCpfValue.length === 11 ? 'CPF' : (cnpjCpfValue.length === 14 ? 'CNPJ' : '');
+                    const cnpjCpfValue = $('cnpjCpf').value;
+                    const documentoTipo = cnpjCpfValue.length === 14 ? 'CPF' : (cnpjCpfValue.length > 14 ? 'CNPJ' : '');
                     const clienteNome = $('cliente').value || 'o(a) cliente';
                     const ruaObs = $('rua').value || 'endereço não informado';
                     const numObs = $('numero').value || '';
+                    const complementoObs = $('complemento').value || '';
                     const bairroObs = $('bairro').value || '';
                     const cidadeObs = $('cidade').value || '';
 
-                    const enderecoCompleto = `${ruaObs} ${numObs ? (', ' + numObs) : ''}${bairroObs ? (', ' + bairroObs) : ''}${cidadeObs ? (', ' + cidadeObs) : ''}`;
+                    const enderecoCompleto = `${ruaObs} ${numObs ? (', ' + numObs) : ''}${complementoObs ? (', ' + complementoObs) : ''}${bairroObs ? (', ' + bairroObs) : ''}${cidadeObs ? (', ' + cidadeObs) : ''}`;
                     const documentoText = documentoTipo ? `${documentoTipo} ${cnpjCpfValue}` : cnpjCpfValue;
 
                     const observacaoText = `Declaro para os devidos fins que a empresa JDC climatização, realizou a limpeza e prevenção no equipamento de ar condicionado do(a) cliente ${clienteNome} ${documentoText}, localizado na rua ${enderecoCompleto}.`;
@@ -635,8 +681,8 @@
                 console.error("Erro ao gerar PDF:", error);
                 showMessageBox("Ocorreu um erro ao gerar o PDF. Verifique o console para mais detalhes.");
             }).finally(() => {
-                $('gerar').innerText = originalButtonText;
-                $('gerar').disabled = false;
+                    $('gerar').innerText = originalButtonText;
+                    $('gerar').disabled = false;
             });
         });
     </script>
