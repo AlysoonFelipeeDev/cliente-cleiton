@@ -251,6 +251,16 @@
             margin-bottom: 5px;
         }
 
+        #observacao-preview-section {
+            margin-top: 5px;
+            margin-bottom: 70px;
+        }
+
+        #observacaoPreview {
+            margin-top: 5px;
+            font-weight: 500;
+        }
+
         @media (max-width: 768px) {
             body {
                 padding: 12px;
@@ -333,6 +343,15 @@
                 <div id="servicos-list"></div>
                 <button id="add-servico" class="btn ghost">Adicionar Serviço</button>
             </div>
+            
+            <div id="observacao-container" style="display: none;">
+                <div style="display: flex; align-items: center; margin-top: 10px;">
+                    <input type="checkbox" id="incluirObservacao" style="width: auto; margin-right: 5px;" checked>
+                    <label for="incluirObservacao" style="margin: 0; display: inline;">Incluir Observação</label>
+                </div>
+                <label>CNPJ / CPF do Cliente</label>
+                <input id="cnpjCpf" type="text">
+            </div>
 
             <button id="gerar" class="btn">Salvar em PDF</button>
             <button id="limpar" class="btn ghost">Limpar</button>
@@ -388,6 +407,13 @@
                             </table>
                         </div>
                     </div>
+                </div>
+                
+                <div id="observacao-preview-section" style="display: none;">
+                    <div class="section">
+                        <strong>Observação:</strong>
+                    </div>
+                    <div id="observacaoPreview"></div>
                 </div>
 
                 <div class="footer-container">
@@ -448,8 +474,8 @@
                 const qtd = item.querySelector('.qtd-item').value;
                 const valorUnitario = item.querySelector('.valor-unitario-item').value;
 
-                // Remove R$ and replace comma with dot for calculation
-                const valorLimpo = valorUnitario.replace(/[R$.,]/g, '').replace(/,/, '.');
+                // Remove R$ e pontos de milhar, depois substitui a vírgula do decimal por ponto
+                const valorLimpo = valorUnitario.replace(/[R$]/g, '').replace(/\./g, '').replace(/,/, '.');
                 const qtdLimpa = qtd.replace(/[^0-9.]/g, '') || 1;
                 const valorTotalItem = (parseFloat(valorLimpo) || 0) * (parseFloat(qtdLimpa) || 1);
 
@@ -499,10 +525,11 @@
             updatePreview();
         });
 
-        const fields = ['tipo', 'cliente', 'contato', 'rua', 'numero', 'bairro', 'cidade'];
+        const fields = ['tipo', 'cliente', 'contato', 'rua', 'numero', 'bairro', 'cidade', 'cnpjCpf'];
         fields.forEach(f => $(f).addEventListener('input', updatePreview));
         $('descricao').addEventListener('input', updatePreview);
         $('tipo').addEventListener('change', updatePreview);
+        $('incluirObservacao').addEventListener('change', updatePreview);
 
         function updatePreview() {
             $('clientePreview').innerText = $('cliente').value || '-';
@@ -514,29 +541,53 @@
             $('endPreview').innerText = rua + (num ? (', nº ' + num) : '') + ' — ' + cidade + ' - ' + bairro;
             $('metaData').innerText = $('date').value || formatDateBR();
             $('fullDate').innerText = formatFullDateBR();
-
+            
             const tipo = $('tipo').value;
             $('tipoPreview').innerText = (tipo === 'LAUDO') ? 'LAUDO TÉCNICO' : (tipo === 'ORCAMENTO' ? 'ORÇAMENTO' : 'SERVIÇO PRESTADO');
+            
+            const isServicoPrestado = tipo === 'SERVICO_PRESTADO';
+            const isOrcamento = tipo === 'ORCAMENTO';
+            const isLaudo = tipo === 'LAUDO';
+            
+            $('descricao-label').style.display = isLaudo ? 'block' : 'none';
+            $('descricao').style.display = isLaudo ? 'block' : 'none';
+            $('descricao-preview-section').style.display = isLaudo ? 'block' : 'none';
+            
+            $('servicos-container').style.display = (isServicoPrestado || isOrcamento) ? 'block' : 'none';
+            $('servicos-preview-section').style.display = (isServicoPrestado || isOrcamento) ? 'block' : 'none';
+            
+            $('observacao-container').style.display = isServicoPrestado ? 'block' : 'none';
 
-            if (tipo === 'LAUDO') {
-                $('descricao-label').style.display = 'block';
-                $('descricao').style.display = 'block';
-                $('descricao-preview-section').style.display = 'block';
-                $('servicos-container').style.display = 'none';
-                $('servicos-preview-section').style.display = 'none';
-                totalGeralFooterContainer.style.display = 'none';
-                $('descPreview').innerText = $('descricao').value || '-';
-            } else {
-                $('descricao-label').style.display = 'none';
-                $('descricao').style.display = 'none';
-                $('descricao-preview-section').style.display = 'none';
-                $('servicos-container').style.display = 'block';
-                $('servicos-preview-section').style.display = 'block';
-                totalGeralFooterContainer.style.display = 'flex';
+            const shouldShowObservation = isServicoPrestado && $('incluirObservacao').checked;
+            $('observacao-preview-section').style.display = shouldShowObservation ? 'block' : 'none';
+
+            totalGeralFooterContainer.style.display = (isServicoPrestado || isOrcamento) ? 'flex' : 'none';
+            
+            $('descPreview').innerText = $('descricao').value || '-';
+            
+            if (isServicoPrestado || isOrcamento) {
                 updateServicosPreview();
+
+                if (shouldShowObservation) {
+                    const cnpjCpfValue = $('cnpjCpf').value.replace(/\D/g, '');
+                    const documentoTipo = cnpjCpfValue.length === 11 ? 'CPF' : (cnpjCpfValue.length === 14 ? 'CNPJ' : '');
+                    const clienteNome = $('cliente').value || 'o(a) cliente';
+                    const ruaObs = $('rua').value || 'endereço não informado';
+                    const numObs = $('numero').value || '';
+                    const bairroObs = $('bairro').value || '';
+                    const cidadeObs = $('cidade').value || '';
+
+                    const enderecoCompleto = `${ruaObs} ${numObs ? (', ' + numObs) : ''}${bairroObs ? (', ' + bairroObs) : ''}${cidadeObs ? (', ' + cidadeObs) : ''}`;
+                    const documentoText = documentoTipo ? `${documentoTipo} ${cnpjCpfValue}` : cnpjCpfValue;
+
+                    const observacaoText = `Declaro para os devidos fins que a empresa JDC climatização, realizou a limpeza e prevenção no equipamento de ar condicionado do(a) cliente ${clienteNome} ${documentoText}, localizado na rua ${enderecoCompleto}.`;
+                    $('observacaoPreview').innerText = observacaoText;
+                } else {
+                    $('observacaoPreview').innerText = '';
+                }
             }
         }
-
+        
         updatePreview();
         addServicoItem();
 
